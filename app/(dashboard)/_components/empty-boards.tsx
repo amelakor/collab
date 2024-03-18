@@ -15,7 +15,7 @@ export const EmptyBoards = () => {
         if (!organization) return;
         mutate({
             orgId: organization.id,
-            title: "Title",
+            title: "Untitled",
         })
             .then((id) => {
                 toast.success("Board has been created.");
