@@ -78,8 +78,8 @@ export type NoteLayer = {
 };
 
 export type Point = {
-    x: string;
-    y: string;
+    x: number;
+    y: number;
 };
 
 export type XYWH = {
@@ -129,3 +129,10 @@ export type CanvasState =
           initialBounds: XYWH;
           corner: Side;
       };
+
+export type Layer =
+    | RectangleLayer
+    | EllipseLayer
+    | PathLayer
+    | TextLayer
+    | NoteLayer;
