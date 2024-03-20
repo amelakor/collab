@@ -11,8 +11,9 @@ import {
     useSelf,
     useMutation,
     useStorage,
+    useOthersMapped,
 } from "@/liveblocks.config";
-import { useCallback, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import {
     Camera,
     CanvasMode,
@@ -22,7 +23,7 @@ import {
     Point,
 } from "@/types/canvas";
 import { CursorsPresence } from "./cursor-presence";
-import { poniterEventToCanvasPoint } from "@/lib/utils";
+import { connectionIdToColor, poniterEventToCanvasPoint } from "@/lib/utils";
 import { LiveObject } from "@liveblocks/client";
 import { LayerPreview } from "./layer-preview";
 
@@ -121,6 +122,26 @@ export const Canvas = ({ boardId }: CanvasProps) => {
         [camera, canvasState, history, insertLayer]
     );
 
+    const selections = useOthersMapped((other) => other.presence.selection);
+    console.log(selections, "SELECTIONS");
+
+    const layerIdsToColorSelection = useMemo(() => {
+        const layerIdsToColorSelection: Record<string, string> = {};
+
+        for (const user of selections) {
+            const [connectionid, selection] = user;
+
+            for (const layerId of selection) {
+                layerIdsToColorSelection[layerId] =
+                    connectionIdToColor(connectionid);
+            }
+        }
+
+        return layerIdsToColorSelection;
+    }, [selections]);
+
+    console.log(layerIdsToColorSelection, "OTHER SELECTIONS");
+
     return (
         <main className="h-full w-full relative bg-neutral-100 touch-none">
             <Info boardId={boardId} />
@@ -150,7 +171,7 @@ export const Canvas = ({ boardId }: CanvasProps) => {
                             key={layerId}
                             id={layerId}
                             onLayerPointerDown={() => {}}
-                            selectionColor="#000"
+                            selectionColor={layerIdsToColorSelection[layerId]}
                         />
                     ))}
                     <CursorsPresence />
