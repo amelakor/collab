@@ -33,6 +33,7 @@ import {
 import { LiveObject } from "@liveblocks/client";
 import { LayerPreview } from "./layer-preview";
 import { SelectionBox } from "./selection-box";
+import { SelectionTools } from "./selection-tools";
 
 const MAX_LAYERS = 100;
 
@@ -215,7 +216,6 @@ export const Canvas = ({ boardId }: CanvasProps) => {
     );
 
     const selections = useOthersMapped((other) => other.presence.selection);
-    console.log(selections, "SELECTIONS");
 
     const onLayerPointerDown = useMutation(
         ({ self, setMyPresence }, e: React.PointerEvent, layerId: string) => {
@@ -255,8 +255,6 @@ export const Canvas = ({ boardId }: CanvasProps) => {
         return layerIdsToColorSelection;
     }, [selections]);
 
-    console.log(layerIdsToColorSelection, "OTHER SELECTIONS");
-
     const onResizeHandlePointerDown = useCallback(
         (corner: Side, initialBounds: XYWH) => {
             history.pause();
@@ -280,6 +278,10 @@ export const Canvas = ({ boardId }: CanvasProps) => {
                 redo={history.redo}
                 canRedo={canRedo}
                 canUndo={canUndo}
+            />
+            <SelectionTools
+                camera={camera}
+                setLastUsedColor={setLastUsedColor}
             />
             <svg
                 className="h-[100vh] w-[100vw]"
