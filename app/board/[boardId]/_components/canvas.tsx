@@ -91,6 +91,17 @@ export const Canvas = ({ boardId }: CanvasProps) => {
         [lastUsedColor]
     );
 
+    const unselectLayers = useMutation(({ self, setMyPresence }) => {
+        if (self.presence.selection.length > 0) {
+            setMyPresence(
+                {
+                    selection: [],
+                },
+                { addToHistory: true }
+            );
+        }
+    }, []);
+
     const onWheel = useCallback((e: React.WheelEvent) => {
         setCamera((camera) => ({
             x: camera.x - e.deltaX,
@@ -168,11 +179,30 @@ export const Canvas = ({ boardId }: CanvasProps) => {
         setMyPresence({ cursor: null });
     }, []);
 
+    const onPointerDown = useCallback(
+        (e: React.PointerEvent) => {
+            const point = poniterEventToCanvasPoint(e, camera);
+
+            if (canvasState.mode === CanvasMode.Inserting) {
+                return;
+            }
+
+            setCanvasState({ origin: point, mode: CanvasMode.Pressing });
+        },
+        [camera, canvasState.mode, setCanvasState]
+    );
+
     const onPointerUp = useMutation(
         ({}, e) => {
             const point = poniterEventToCanvasPoint(e, camera);
 
-            if (canvasState.mode === CanvasMode.Inserting) {
+            if (
+                canvasState.mode === CanvasMode.None ||
+                canvasState.mode === CanvasMode.Pressing
+            ) {
+                unselectLayers();
+                setCanvasState({ mode: CanvasMode.None });
+            } else if (canvasState.mode === CanvasMode.Inserting) {
                 insertLayer(canvasState.layerType, point);
             } else {
                 setCanvasState({
@@ -181,7 +211,7 @@ export const Canvas = ({ boardId }: CanvasProps) => {
             }
             history.resume();
         },
-        [camera, canvasState, history, insertLayer]
+        [camera, canvasState, history, insertLayer, unselectLayers]
     );
 
     const selections = useOthersMapped((other) => other.presence.selection);
@@ -257,6 +287,7 @@ export const Canvas = ({ boardId }: CanvasProps) => {
                 onPointerMove={onPointerMove}
                 onPointerLeave={onPointerLeave}
                 onPointerUp={onPointerUp}
+                onPointerDown={onPointerDown}
             >
                 <g
                     style={{
