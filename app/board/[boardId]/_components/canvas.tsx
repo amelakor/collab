@@ -397,14 +397,9 @@ export const Canvas = ({ boardId }: CanvasProps) => {
         [history]
     );
 
-    const deleteLayers = useDeleteLayers();
-
     useEffect(() => {
         function onKeyDown(e: KeyboardEvent) {
             switch (e.key) {
-                case "Backspace":
-                    deleteLayers();
-                    break;
                 case "z": {
                     if (e.ctrlKey || e.metaKey) {
                         if (e.shiftKey) {
@@ -423,7 +418,7 @@ export const Canvas = ({ boardId }: CanvasProps) => {
         return () => {
             document.removeEventListener("keydown", onKeyDown);
         };
-    }, [deleteLayers, history]);
+    }, [history]);
 
     return (
         <main className="h-full w-full relative bg-neutral-100 touch-none">

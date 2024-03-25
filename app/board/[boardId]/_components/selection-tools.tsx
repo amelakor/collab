@@ -24,7 +24,7 @@ export const SelectionTools = memo(
                 const liveLayerId = storage.get("layerIds");
                 const indices: number[] = [];
 
-                const arr = liveLayerId.toArray();
+                const arr = liveLayerId.toImmutable();
 
                 for (let i = 0; i < arr.length; i++) {
                     if (selection.includes(arr[i])) {
@@ -44,7 +44,7 @@ export const SelectionTools = memo(
                 const liveLayerId = storage.get("layerIds");
                 const indices: number[] = [];
 
-                const arr = liveLayerId.toArray();
+                const arr = liveLayerId.toImmutable();
 
                 for (let i = 0; i < arr.length; i++) {
                     if (selection.includes(arr[i])) {
